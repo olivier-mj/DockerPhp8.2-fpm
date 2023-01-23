@@ -18,11 +18,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
 	libpng-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN  pecl install apcu && \
-	pecl bundle redis && cd redis && phpize && make && make install && \
-	docker-php-ext-configure gd --with-freetype --with-jpeg \
+RUN  pecl install apcu redis opcache && \
 	docker-php-ext-install bcmath sockets  \
-	imagick -j$(nproc) gd gettext event bz2 calendar amqp mysqli pdo_mysql pdo_pgsql pgsql soap xsl sockets zip redis exif memcached mcrypt intl apcu opcache  
+	imagick  gettext event bz2 calendar amqp mysqli pdo_mysql pdo_pgsql pgsql soap xsl sockets zip redis exif memcached mcrypt intl apcu opcache  
 
 
 RUN echo '\
