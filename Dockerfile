@@ -18,8 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
 	libpng-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN pecl channel-update pecl.php.net && \
-    pecl install apcu && \
+RUN  pecl install apcu && \
 	pecl bundle redis && cd redis && phpize && make && make install && \
 	docker-php-ext-configure gd --with-freetype --with-jpeg \
 	docker-php-ext-install bcmath sockets  \
