@@ -12,6 +12,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
 	zip \
 	vim \
 	wget \
+	redis \
 	libfreetype6-dev \
 	libjpeg62-turbo-dev \
 	libpng-dev \
@@ -19,7 +20,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
 
 RUN pecl channel-update pecl.php.net && \
     pecl install apcu && \
-	pecl bundle redis && cd redis && phpize && ./configure --enable-redis-igbinary && make && make install && \
+	pecl bundle redis && cd redis && phpize && make && make install && \
 	docker-php-ext-configure gd --with-freetype --with-jpeg \
 	docker-php-ext-install bcmath sockets  \
 	imagick -j$(nproc) gd gettext event bz2 calendar amqp mysqli pdo_mysql pdo_pgsql pgsql soap xsl sockets zip redis exif memcached mcrypt intl apcu opcache  
