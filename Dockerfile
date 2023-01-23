@@ -13,14 +13,22 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
 	vim \
 	wget \
 	redis \
-	libfreetype6-dev \
-	libjpeg62-turbo-dev \
-	libpng-dev \
+	cron g++ gettext libicu-dev openssl \
+    libc-client-dev libkrb5-dev  \
+    libxml2-dev libfreetype6-dev \
+    libgd-dev libmcrypt-dev bzip2 \
+    libbz2-dev libtidy-dev libcurl4-openssl-dev \
+    libz-dev libmemcached-dev libxslt-dev git-core libpq-dev \
+    libzip4 libzip-dev libwebp-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN  pecl install apcu redis opcache && \
-	docker-php-ext-install bcmath sockets  \
-	imagick  gettext event bz2 calendar amqp mysqli pdo_mysql pdo_pgsql pgsql soap xsl sockets zip redis exif memcached mcrypt intl apcu opcache  
+RUN 	docker-php-ext-install bcmath sockets iconv gettext event bz2 calendar amqp mysqli pdo_mysql pdo_pgsql pgsql soap xsl sockets zip exif memcached mcrypt intl apcu opcache  && \
+			docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp &&\
+    		docker-php-ext-install gd &&\
+			docker-php-ext-configure hash --with-mhash &&\
+			pecl install mongodb && docker-php-ext-enable mongodb &&\
+    		pecl install redis && docker-php-ext-enable redis 
+
 
 
 RUN echo '\
