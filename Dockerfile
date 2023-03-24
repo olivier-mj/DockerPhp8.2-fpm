@@ -1,49 +1,44 @@
 FROM php:8.2-fpm
 LABEL maintainer="contact@oliviermariejoseph.fr"
 
-ENV PHP_SECURITY_CHECHER_VERSION=2.0.6
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get update -q \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -qq -y \
-	curl \
-	git\
-	nano \
-	unzip \
-	zip \
-	vim \
+RUN apt-get update && apt-get install -y \
 	wget \
-	redis \
-	cron g++ gettext libicu-dev openssl \
-    libc-client-dev libkrb5-dev  \
-    libxml2-dev libfreetype6-dev \
-    libgd-dev libmcrypt-dev bzip2 \
-    libbz2-dev libtidy-dev libcurl4-openssl-dev \
-    libz-dev libmemcached-dev libxslt-dev git-core libpq-dev \
-    libzip4 libzip-dev libwebp-dev \
-	&& rm -rf /var/lib/apt/lists/*
+	git \
+	nano
 
-RUN 	docker-php-ext-install bcmath sockets iconv gettext event bz2 calendar amqp mysqli pdo_mysql pdo_pgsql pgsql soap xsl sockets zip exif memcached mcrypt intl apcu opcache  && \
-			docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp &&\
-    		docker-php-ext-install gd &&\
-			docker-php-ext-configure hash --with-mhash &&\
-			pecl install mongodb && docker-php-ext-enable mongodb &&\
-    		pecl install redis && docker-php-ext-enable redis 
+RUN apt-get update && apt-get install -y libzip-dev libicu-dev && docker-php-ext-install pdo zip intl opcache 
 
+# Support de apcu
+RUN pecl install apcu && docker-php-ext-enable apcu
 
+# Support de redis
+RUN pecl install redis && docker-php-ext-enable redis
 
-RUN echo '\
-opcache.interned_strings_buffer=16\n\
-opcache.load_comments=Off\n\
-opcache.max_accelerated_files=16000\n\
-opcache.save_comments=Off\n\
-' >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
+# Support de Postgre
+RUN apt-get update && apt-get install -y libpq-dev && docker-php-ext-install pdo_pgsql
+
+# Support de MySQL (pour la migration)
+RUN docker-php-ext-install mysqli pdo_mysql
+
+# Imagick
+RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && pecl install imagick && docker-php-ext-enable imagick
+
+ADD php.ini /usr/local/etc/php/conf.d/
+
+# Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
+
+# Symfony tool
+RUN wget https://get.symfony.com/cli/installer -O - | bash && \
+	mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
 # Security checker tool
 RUN curl -L https://github.com/fabpot/local-php-security-checker/releases/download/v${PHP_SECURITY_CHECHER_VERSION}/local-php-security-checker_${PHP_SECURITY_CHECHER_VERSION}_linux_$(dpkg --print-architecture) --output /usr/local/bin/local-php-security-checker && \
 	chmod +x /usr/local/bin/local-php-security-checker
 
+# Xdebug (disabled by default, but installed if required)
+# RUN pecl install xdebug-2.9.7 && docker-php-ext-enable xdebug
 ADD php.ini /usr/local/etc/php/conf.d/
-
 
 WORKDIR /var/www
 
