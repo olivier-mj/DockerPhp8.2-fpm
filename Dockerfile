@@ -24,9 +24,15 @@ RUN docker-php-ext-install mysqli pdo_mysql
 # RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && pecl install imagick && docker-php-ext-enable imagick 
 
 # Extension Installler
-RUN  curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - | sh -s \
-    gd imagick
+RUN  curl -sSLf \
+        -o /usr/local/bin/install-php-extensions \
+        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions 
+
+RUN chmod +x /usr/local/bin/install-php-extensions && \
+    install-php-extensions  gd imagick 
+	
 RUN docker-php-ext-install gd
+RUN docker-php-ext-install imagick
 
 
 RUN apt-get clean; \
