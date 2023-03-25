@@ -37,7 +37,7 @@ RUN curl -L https://github.com/fabpot/local-php-security-checker/releases/downlo
 	chmod +x /usr/local/bin/local-php-security-checker
 
 # Xdebug (disabled by default, but installed if required)
-RUN pecl install xdebug-2.9.7 && docker-php-ext-enable xdebug
+RUN pecl install xdebug-3.2.1 && docker-php-ext-enable xdebug
 ADD php.ini /usr/local/etc/php/conf.d/
 
 WORKDIR /var/www
