@@ -24,12 +24,9 @@ RUN docker-php-ext-install mysqli pdo_mysql
 RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && pecl install imagick && docker-php-ext-enable imagick 
 
 # GD
-RUN apt-get update && apt-get install -y  libpng libjpeg-turbo libwebp freetype ico
-RUN apt-get install -y build-essentials \
-    icu-dev icu-libs zlib-dev g++ make automake autoconf libzip-dev \
-    libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev && \
-    docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp && \
-    docker-php-ext-install gd
+RUN  curl -sSL https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - | sh -s \
+    gd xdebug
+RUN docker-php-ext-install gd
 
 
 RUN apt-get clean; \
