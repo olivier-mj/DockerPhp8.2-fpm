@@ -21,7 +21,19 @@ RUN apt-get update && apt-get install -y libpq-dev && docker-php-ext-install pdo
 RUN docker-php-ext-install mysqli pdo_mysql
 
 # Imagick
-RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && pecl install imagick && docker-php-ext-enable imagick
+RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && pecl install imagick && docker-php-ext-enable imagick 
+
+# GD
+RUN apt-get update && apt-get install -y  libpng libjpeg-turbo libwebp freetype ico
+RUN apt-get install -y build-essentials \
+    icu-dev icu-libs zlib-dev g++ make automake autoconf libzip-dev \
+    libpng-dev libwebp-dev libjpeg-turbo-dev freetype-dev && \
+    docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg --with-webp && \
+    docker-php-ext-install gd
+
+
+RUN apt-get clean; \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
 ADD php.ini /usr/local/etc/php/conf.d/
 
