@@ -4,7 +4,8 @@ LABEL maintainer="contact@oliviermariejoseph.fr"
 RUN apt-get update && apt-get install -y \
 	wget \
 	git \
-	nano
+	nano 
+
 
 RUN apt-get update && apt-get install -y libzip-dev libicu-dev && docker-php-ext-install pdo zip intl opcache 
 
@@ -17,23 +18,14 @@ RUN pecl install redis && docker-php-ext-enable redis
 # Support de Postgre
 RUN apt-get update && apt-get install -y libpq-dev && docker-php-ext-install pdo_pgsql
 
-# Support de MySQL (pour la migration)
+# Support de MySQL 
 RUN docker-php-ext-install mysqli pdo_mysql
 
 # Imagick
-# RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && pecl install imagick && docker-php-ext-enable imagick 
+RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && pecl install imagick && docker-php-ext-enable imagick 
 
-# Extension Installler
-RUN  curl -sSLf \
-        -o /usr/local/bin/install-php-extensions \
-        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions 
-
-RUN chmod +x /usr/local/bin/install-php-extensions && \
-    install-php-extensions  gd imagick 
-	
-RUN docker-php-ext-install gd
-RUN docker-php-ext-install imagick
-
+# GD
+RUN apt-get update && apt-get install -y zlib1g-dev libwebp-dev libpng-dev && docker-php-ext-install gd
 
 RUN apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
